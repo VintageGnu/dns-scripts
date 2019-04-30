@@ -20,19 +20,18 @@ $excludes = [System.IO.File]::Exists("excludes.txt")
 
 if($excludes)
 {
-    echo "Excludes file found, some domains will be skipped."
-
+	echo "Excludes file found, some domains will be skipped."
 }
 else
 {
-    echo "No excludes files found, processing all domains."
+	echo "No excludes files found, processing all domains."
 }
 
 # Set your hostname regex here
-$hostpattern = '^server[1-5]\.example\.com$'
+# $hostpattern = '^server[1-5]\.example\.com$'
 
 # Set your IP address regex here
-$ippattern = '^123\.123\.123\.(123|124|125)$'
+# $ippattern = '^123\.123\.123\.(123|124|125)$'
 
 # Clean up the old results and get started
 echo "Checking domains in domains.txt to check out their mailserver setup."
@@ -45,21 +44,21 @@ $i = 1
 
 while($null -ne ($domain = $domains.ReadLine()))
 {
-    Write-Progress -Activity "Testing Domains" -Status "Testing $domain ($i/$totaldomains)" -PercentComplete ($i / $totaldomains * 100)
+	Write-Progress -Activity "Testing Domains" -Status "Testing $domain ($i/$totaldomains)" -PercentComplete ($i / $totaldomains * 100)
 
 	# Skip if in excludes
-    if((-Not $excludes) -OR (-Not (Select-String -quiet $domain .\excludes.txt)))
-    {
-        try
-        {
-			# Retrieve nameserver and MX recod information
+	if((-Not $excludes) -OR (-Not (Select-String -quiet $domain .\excludes.txt)))
+	{
+		try
+		{
+			# Retrieve nameserver and MX record information
 			$nsname = Resolve-DnsName $domain -type NS -NoHostsFile -ErrorAction Stop -DnsOnly | Select-Object -first 1 -Property NameHost
-            $mxname = Resolve-DnsName $domain -type MX -NoHostsFile -ErrorAction Stop -DnsOnly | Sort-Object -Property Preference | Select-Object -first 1 -Property NameExchange
+			$mxname = Resolve-DnsName $domain -type MX -NoHostsFile -ErrorAction Stop -DnsOnly | Sort-Object -Property Preference | Select-Object -first 1 -Property NameExchange
 			$nsip = Resolve-DnsName $nsname.NameHost -NoHostsFile -ErrorAction Stop -DnsOnly  | Select-Object -Property IPAddress
 			$mxip = Resolve-DnsName $mxname.NameExchange -NoHostsFile -ErrorAction Stop -DnsOnly  | Select-Object -Property IPAddress
-			
-            if($nsname.NameHost -match $hostpattern)
-            {
+
+			if($nsname.NameHost -match $hostpattern)
+			{
 				if($mxip.IPAddress -match $ippattern)
 				{
 					echo $domain >> our-mailserver-our-nameserver.txt
@@ -68,12 +67,12 @@ while($null -ne ($domain = $domains.ReadLine()))
 				{
 					echo $domain >> external-mailserver-our-nameserver.txt
 				}
-            }
-            else
-            {
+			}
+			else
+			{
 				# Check if it is using the specified nameserver but with a different hostname
-                if($nsip.IPAddress -match $ippattern)
-                {
+				if($nsip.IPAddress -match $ippattern)
+				{
 					if($mxip.IPAddress -match $ippattern)
 					{
 						echo $domain >> our-mailserver-our-nameserver.txt
@@ -82,9 +81,9 @@ while($null -ne ($domain = $domains.ReadLine()))
 					{
 						echo $domain >> external-mailserver-our-nameserver.txt
 					}
-                }
-                else
-                {
+				}
+				else
+				{
 					if($mxip.IPAddress -match $ippattern)
 					{
 						echo $domain >> our-mailserver-external-nameserver.txt
@@ -93,11 +92,11 @@ while($null -ne ($domain = $domains.ReadLine()))
 					{
 						echo $domain >> external-mailserver-external-nameserver.txt
 					}
-                }
-            }
-        }
-        Catch
-        {
+				}
+			}
+		}
+		Catch
+		{
 			# Differentiate between DNS errors and missing MX record
 			if($mxname.NameExchange -ne $null)
 			{
@@ -107,10 +106,10 @@ while($null -ne ($domain = $domains.ReadLine()))
 			{
 				echo "$domain - NO_MX_FOUND" >> broken-mailserver.txt
 			}
-        }
-    }
+		}
+	}
 
-    $i++
+	$i++
 
 }
 
