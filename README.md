@@ -20,6 +20,7 @@ Simply right click on a file and select Run with PowerShell.
 As it runs it sort the domains into a couple of different files, depending on what script you run.
 If these files already existed then they will be overwritten, so copy them elsewhere if you want them preserved.
 
-## broken-*.txt
+## broken-\*.txt
 The domains that end up in here are usually expired, but in some cases simply have misconfigured nameservers.
+
 In broken-mailserver you get a little extra info, namely the primary MX record that failed to resolve, or NO_MX_FOUND if no MX records were found for the domain.
