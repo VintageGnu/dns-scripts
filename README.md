@@ -2,7 +2,7 @@
 These scripts were created to help a server admin of a hosting provider figure out where the sites they were supposedly hosting actually were, and pick up domains that might be misconfigured.
 
 ## First time setup
-Extract the .ps1 files to their own folder.
+(Recommended) Put the .ps1 files in their own folder.
 Open up a PowerShell terminal with admin privileges.
 Run the command "set-executionpolicy unrestricted" (without quotes) and accept.
 
